@@ -184,7 +184,7 @@ const requestHandler = (request, response) => {
       case ALERT_PATTERN + 'x':
         let xPayload = PAYLOADS[reqAr.shift()] || 'pizza'
         slackPost(
-          'XSS Hook use detected ```' +
+          'Hook use detected ```' +
           `-----\n${httpMethod} ${requestURI}\n` +
           `${headerItemList.join('\n')}\n\n${dataSlab}\n\n` +
           '```'
@@ -193,10 +193,9 @@ const requestHandler = (request, response) => {
         response.end(xPayload.content);
         break;
       case ALERT_PATTERN:
-        console.log('XSS Callback');
         response.statusCode = 200
         slackPost(
-          'XSS Hook use detected ```' +
+          'Hook use detected ```' +
           `-----\n${httpMethod} ${requestURI}\n` +
           `${headerItemList.join('\n')}\n\n${dataSlab}\n\n` +
           '```'
