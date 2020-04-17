@@ -12,6 +12,7 @@ start:
 		--name xodbox-prod \
 		--restart=always \
 		-v $(shell pwd)/server.js:/usr/src/app/server.js:ro \
+		-v $(shell pwd)/static:/usr/src/app/static:ro \
 		--expose 3000 \
 		--env-file xodbox.env \
 		--user 1000 \
@@ -20,6 +21,7 @@ start:
 		--name txt-xodbox-prod \
 		--restart=always \
 		-v $(shell pwd)/server.js:/usr/src/app/server.js:ro \
+		-v $(shell pwd)/static:/usr/src/app/static:ro \
 		--expose 3000 \
 		--env-file txt-xodbox.env \
 		--user 1000 \
