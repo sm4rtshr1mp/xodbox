@@ -3,12 +3,11 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const port = 3000
-const querystring = require('querystring');
 
-const SLACK_URL = process.env.SLACK_URL
-const SLACK_CHANNEL = process.env.SLACK_CHANNEL || '#borked'
-const SLACK_USER = process.env.SLACK_USER || 'hookbot'
-const SLACK_ICON = process.env.SLACK_ICON || ':ghost:'
+const DISCORD_URL = process.env.DISCORD_URL
+const DISCORD_CHANNEL = process.env.DISCORD_CHANNEL || '#borked'
+const DISCORD_USER = process.env.DISCORD_USER || 'hookbot'
+const DISCORD_ICON = process.env.DISCORD_ICON || ':ghost:'
 const DEFAULT_DOMAIN = process.env.DEFAULT_DOMAIN
 const LOGO_FILE = process.env.LOGO_FILE || 'default-logo.svg'
 const LOGO_SVG = fs.readFileSync(`/usr/src/app/static/${LOGO_FILE}`)
@@ -45,26 +44,21 @@ const PAYLOADS = {
   }
 }
 
-function slackPost(text) {
-  console.log('slackpost');
+function discordPost(text) {
+  console.log('discord post');
 
-  let payload = querystring.stringify({
-    payload: JSON.stringify({
-      "channel": SLACK_CHANNEL,
-      "username": SLACK_USER,
-      "icon_emoji": SLACK_ICON,
-      "text": text
-    })
-  });
+  let payload = JSON.stringify({
+    content: text
+  })
 
-  let url = new URL(SLACK_URL);
+  let url = new URL(DISCORD_URL);
   let opts = {
     hostname: url.hostname,
     port: 443,
     path: url.pathname,
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
       'Content-Length': payload.length
     }
   };
@@ -81,10 +75,6 @@ function slackPost(text) {
   });
   req.write(payload);
   req.end();
-}
-
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 const requestHandler = (request, response) => {
@@ -185,7 +175,7 @@ const requestHandler = (request, response) => {
         break;
       case ALERT_PATTERN + 'x':
         let xPayload = PAYLOADS[reqAr.shift()] || 'pizza'
-        slackPost(
+        discordPost(
           'Hook use detected ```' +
           `-----\n${httpMethod} ${requestURI}\n` +
           `${headerItemList.join('\n')}\n\n${dataSlab}\n\n` +
@@ -196,7 +186,7 @@ const requestHandler = (request, response) => {
         break;
       case ALERT_PATTERN:
         response.statusCode = 200
-        slackPost(
+        discordPost(
           'Hook use detected ```' +
           `-----\n${httpMethod} ${requestURI}\n` +
           `${headerItemList.join('\n')}\n\n${dataSlab}\n\n` +
